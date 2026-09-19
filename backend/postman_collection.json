@@ -1,0 +1,179 @@
+{
+  "info": {
+    "name": "Restaurant Table Reservation System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "customerToken", "value": "" },
+    { "key": "staffToken", "value": "" },
+    { "key": "reservationId", "value": "" },
+    { "key": "tableId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Customer",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const data = pm.response.json();",
+              "pm.collectionVariables.set('customerToken', data.access_token);"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test Customer\",\n  \"email\": \"customer@example.com\",\n  \"password\": \"password123\"\n}" }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const data = pm.response.json();",
+              "pm.collectionVariables.set('customerToken', data.access_token);"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"password123\"\n}" }
+          }
+        },
+        {
+          "name": "Get Profile (protected)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": "{{baseUrl}}/auth/profile"
+          }
+        },
+        {
+          "name": "Get Profile - No Token (should fail)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/auth/profile"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tables",
+      "item": [
+        {
+          "name": "List Tables",
+          "request": { "method": "GET", "url": "{{baseUrl}}/tables" }
+        },
+        {
+          "name": "List Available Tables",
+          "request": { "method": "GET", "url": "{{baseUrl}}/tables/available?status=available" }
+        },
+        {
+          "name": "Create Table (staff/admin)",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const data = pm.response.json();",
+              "if (data.id) pm.collectionVariables.set('tableId', data.id);"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{staffToken}}" }
+            ],
+            "url": "{{baseUrl}}/tables",
+            "body": { "mode": "raw", "raw": "{\n  \"tableNumber\": \"T1\",\n  \"capacity\": 4,\n  \"location\": \"Window side\"\n}" }
+          }
+        },
+        {
+          "name": "Get Table By Id",
+          "request": {
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "method": "GET",
+            "url": "{{baseUrl}}/tables/{{tableId}}"
+          }
+        },
+        {
+          "name": "Update Table (staff/admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{staffToken}}" }
+            ],
+            "url": "{{baseUrl}}/tables/{{tableId}}",
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"available\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservations",
+      "item": [
+        {
+          "name": "Create Reservation",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "const data = pm.response.json();",
+              "if (data.id) pm.collectionVariables.set('reservationId', data.id);"
+            ]}
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "url": "{{baseUrl}}/reservations",
+            "body": { "mode": "raw", "raw": "{\n  \"tableId\": {{tableId}},\n  \"reservationDate\": \"2026-10-01\",\n  \"reservationTime\": \"19:00\",\n  \"partySize\": 2\n}" }
+          }
+        },
+        {
+          "name": "My Reservations",
+          "request": {
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "method": "GET",
+            "url": "{{baseUrl}}/reservations/mine"
+          }
+        },
+        {
+          "name": "All Reservations (staff/admin)",
+          "request": {
+            "header": [{ "key": "Authorization", "value": "Bearer {{staffToken}}" }],
+            "method": "GET",
+            "url": "{{baseUrl}}/reservations"
+          }
+        },
+        {
+          "name": "Update Reservation Status (staff/admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{staffToken}}" }
+            ],
+            "url": "{{baseUrl}}/reservations/{{reservationId}}/status",
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"confirmed\"\n}" }
+          }
+        },
+        {
+          "name": "Cancel Reservation",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": "{{baseUrl}}/reservations/{{reservationId}}"
+          }
+        }
+      ]
+    }
+  ]
+}
