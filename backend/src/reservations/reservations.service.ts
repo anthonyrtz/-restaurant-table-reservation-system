@@ -28,7 +28,13 @@ export class ReservationsService {
     dto: CreateReservationDto,
   ): Promise<Reservation> {
     // Confirms the table actually exists before booking against it.
-    await this.tablesService.findOne(dto.tableId);
+    const table = await this.tablesService.findOne(dto.tableId);
+
+    if (dto.partySize > table.capacity) {
+      throw new ConflictException(
+        `Table ${table.tableNumber} only seats ${table.capacity}, but the party size is ${dto.partySize}`,
+      );
+    }
 
     await this.assertNoConflict(
       dto.tableId,
