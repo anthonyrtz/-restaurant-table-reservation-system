@@ -5,196 +5,271 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Osteria — Table Reservations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #1C1917;
-    --bg-raised: #262220;
-    --bg-input: #2E2926;
-    --text: #F1EBE3;
-    --text-dim: #B8AFA5;
+    --bg: #17140F;
+    --bg-raised: #211D17;
+    --bg-input: #29241D;
+    --text: #EFE7D8;
+    --text-dim: #9C9284;
+    --text-faint: #6B6357;
     --wine: #7A2E3A;
     --wine-hover: #8F3A47;
-    --brass: #B08D57;
-    --border: #3A3431;
+    --gold: #C9A227;
+    --gold-dim: #8A7220;
+    --border: #362F26;
+    --border-light: #4A4136;
     --error: #C1594F;
-    --success: #6B8E5A;
+    --success: #7A9A66;
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0;
     background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 800px 400px at 50% -10%, rgba(122,46,58,0.12), transparent),
+      repeating-linear-gradient(180deg, transparent, transparent 79px, rgba(255,255,255,0.012) 80px);
     color: var(--text);
     font-family: 'Inter', sans-serif;
     font-size: 15px;
-    line-height: 1.5;
+    line-height: 1.6;
+    min-height: 100vh;
   }
-  h1, h2, h3 { font-family: 'Fraunces', serif; font-weight: 600; margin: 0; }
-  .shell { max-width: 720px; margin: 0 auto; padding: 40px 24px 80px; }
+  h1, h2, h3 { font-family: 'Fraunces', serif; font-weight: 500; margin: 0; }
 
-  .brand { margin-bottom: 32px; }
-  .brand h1 { font-size: 28px; letter-spacing: -0.01em; }
-  .brand p { color: var(--text-dim); margin: 4px 0 0; font-size: 14px; }
-
-  nav { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
-  nav button {
-    background: none; border: none; color: var(--text-dim);
-    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
-    padding: 12px 4px; margin-right: 20px; cursor: pointer;
-    border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(23,20,15,0.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
   }
-  nav button:hover { color: var(--text); }
-  nav button.active { color: var(--text); border-bottom-color: var(--wine); }
+  .header-inner {
+    max-width: 780px; margin: 0 auto; padding: 18px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .wordmark { font-family: 'Fraunces', serif; font-size: 21px; letter-spacing: 0.01em; }
+  .wordmark span { color: var(--gold); font-style: italic; font-weight: 300; }
+  .who { display: flex; align-items: center; gap: 16px; font-size: 13px; color: var(--text-dim); }
+  .who strong { color: var(--text); font-weight: 500; }
+  .role-tag {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--gold-dim); border: 1px solid var(--border-light);
+    padding: 2px 7px; border-radius: 3px;
+  }
 
-  .panel { display: none; }
+  .shell { max-width: 780px; margin: 0 auto; padding: 0 24px 100px; }
+
+  .hero { padding: 72px 0 48px; text-align: left; }
+  .hero .eyebrow {
+    font-size: 12px; color: var(--gold-dim); letter-spacing: 0.14em;
+    margin-bottom: 14px; font-weight: 500;
+  }
+  .hero h1 { font-size: 46px; line-height: 1.08; max-width: 480px; font-weight: 500; }
+  .hero h1 em { font-style: italic; color: var(--gold); font-weight: 300; }
+  .hero p { color: var(--text-dim); font-size: 16px; margin-top: 16px; max-width: 400px; }
+
+  .rule { border: none; border-top: 1px solid var(--border); margin: 0 0 40px; }
+  .rule-dotted { border: none; border-top: 1px dotted var(--border-light); margin: 24px 0; }
+
+  nav.tabs { display: flex; gap: 28px; margin-bottom: 36px; }
+  nav.tabs button {
+    background: none; border: none; color: var(--text-faint);
+    font-family: 'Fraunces', serif; font-size: 16px; font-weight: 500;
+    padding: 0 0 10px; cursor: pointer; position: relative;
+    transition: color 0.2s;
+  }
+  nav.tabs button::after {
+    content: ''; position: absolute; left: 0; bottom: -1px; height: 1px; width: 0;
+    background: var(--gold); transition: width 0.25s ease;
+  }
+  nav.tabs button:hover { color: var(--text-dim); }
+  nav.tabs button.active { color: var(--text); }
+  nav.tabs button.active::after { width: 100%; }
+
+  .panel { display: none; padding-top: 4px; }
   .panel.active { display: block; }
 
-  .field { margin-bottom: 16px; }
-  .field label { display: block; font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-faint); margin-bottom: 8px; font-weight: 500;
+  }
   .field input, .field select {
     width: 100%; background: var(--bg-input); border: 1px solid var(--border);
-    color: var(--text); padding: 10px 12px; border-radius: 4px;
-    font-family: 'Inter', sans-serif; font-size: 14px;
+    color: var(--text); padding: 12px 14px; border-radius: 3px;
+    font-family: 'Inter', sans-serif; font-size: 14px; transition: border-color 0.15s;
   }
-  .field input:focus, .field select:focus { outline: none; border-color: var(--brass); }
-  .row { display: flex; gap: 12px; }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--gold-dim); }
+  .field input::placeholder { color: var(--text-faint); }
+  .row { display: flex; gap: 14px; }
   .row .field { flex: 1; }
 
   button.primary {
-    background: var(--wine); color: var(--text); border: none;
-    padding: 11px 20px; border-radius: 4px; font-size: 14px; font-weight: 500;
+    background: var(--wine); color: var(--text); border: 1px solid transparent;
+    padding: 13px 24px; border-radius: 3px; font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
     cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s;
   }
   button.primary:hover { background: var(--wine-hover); }
   button.primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
   button.ghost {
-    background: none; border: 1px solid var(--border); color: var(--text);
-    padding: 6px 12px; border-radius: 4px; font-size: 13px; cursor: pointer;
-    font-family: 'Inter', sans-serif;
+    background: none; border: 1px solid var(--border-light); color: var(--text-dim);
+    padding: 9px 16px; border-radius: 3px; font-size: 12px; cursor: pointer;
+    font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;
+    transition: border-color 0.15s, color 0.15s;
   }
-  button.ghost:hover { border-color: var(--brass); }
+  button.ghost:hover { border-color: var(--gold-dim); color: var(--text); }
 
-  .switch-link { margin-top: 16px; font-size: 13px; color: var(--text-dim); }
-  .switch-link a { color: var(--brass); cursor: pointer; text-decoration: none; }
-  .switch-link a:hover { text-decoration: underline; }
+  .switch-line { margin-top: 20px; font-size: 13px; color: var(--text-dim); }
+  .switch-line a { color: var(--gold); cursor: pointer; text-decoration: none; }
 
-  .item {
-    border: 1px solid var(--border); border-radius: 6px; padding: 16px;
-    margin-bottom: 12px; background: var(--bg-raised);
-  }
-  .item-top { display: flex; justify-content: space-between; align-items: baseline; }
-  .item-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; }
-  .item-meta { color: var(--text-dim); font-size: 13px; margin-top: 4px; }
+  form.auth-form { max-width: 380px; }
+  form.auth-form h2 { font-size: 24px; margin-bottom: 6px; }
+  form.auth-form .sub { color: var(--text-dim); font-size: 13px; margin-bottom: 28px; }
+  form.auth-form .sub a { color: var(--gold); cursor: pointer; text-decoration: none; border-bottom: 1px solid transparent; }
+  form.auth-form .sub a:hover { border-bottom-color: var(--gold); }
+
+  .item { border-bottom: 1px solid var(--border); padding: 24px 0; }
+  .item:first-child { padding-top: 0; }
+  .item-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+  .item-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 500; }
+  .item-meta { color: var(--text-dim); font-size: 13px; margin-top: 6px; }
+
   .status-pill {
-    display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 100px;
-    font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    font-weight: 600; white-space: nowrap; padding-top: 3px;
   }
-  .status-pending { background: #4A3F2A; color: var(--brass); }
-  .status-confirmed { background: #2A4A38; color: var(--success); }
-  .status-completed { background: #2A3A4A; color: #7BA0C4; }
-  .status-cancelled { background: #4A2A2A; color: var(--error); }
-  .status-available { background: #2A4A38; color: var(--success); }
-  .status-reserved { background: #4A3F2A; color: var(--brass); }
-  .status-occupied { background: #4A2A2A; color: var(--error); }
-  .status-unavailable { background: var(--border); color: var(--text-dim); }
+  .status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .status-pending::before, .status-reserved::before { background: var(--gold); }
+  .status-pending, .status-reserved { color: var(--gold); }
+  .status-confirmed::before, .status-available::before { background: var(--success); }
+  .status-confirmed, .status-available { color: var(--success); }
+  .status-completed::before { background: #7B94B0; }
+  .status-completed { color: #7B94B0; }
+  .status-cancelled::before, .status-occupied::before { background: var(--error); }
+  .status-cancelled, .status-occupied { color: var(--error); }
+  .status-unavailable::before { background: var(--text-faint); }
+  .status-unavailable { color: var(--text-faint); }
 
-  .empty { color: var(--text-dim); font-style: italic; padding: 24px 0; }
-
-  .banner {
-    padding: 10px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 20px;
+  .empty {
+    color: var(--text-faint); font-style: italic; padding: 40px 0; text-align: center;
+    border: 1px dashed var(--border); border-radius: 4px; font-size: 14px;
   }
-  .banner.error { background: rgba(193,89,79,0.15); color: var(--error); border: 1px solid rgba(193,89,79,0.3); }
-  .banner.success { background: rgba(107,142,90,0.15); color: var(--success); border: 1px solid rgba(107,142,90,0.3); }
 
-  .whoami {
-    display: flex; justify-content: space-between; align-items: center;
-    padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--border);
-    font-size: 13px; color: var(--text-dim);
-  }
-  .whoami strong { color: var(--text); font-weight: 500; }
+  .banner { padding: 13px 16px; border-radius: 3px; font-size: 13px; margin: 24px 0; border-left: 3px solid; }
+  .banner.error { background: rgba(193,89,79,0.08); color: #D48179; border-color: var(--error); }
+  .banner.success { background: rgba(122,154,102,0.08); color: #9CB889; border-color: var(--success); }
 
-  .actions { display: flex; gap: 8px; margin-top: 12px; }
+  .actions { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
 
-  .section-title { font-size: 20px; margin-bottom: 4px; }
-  .section-sub { color: var(--text-dim); font-size: 13px; margin-bottom: 20px; }
+  .section-head { margin-bottom: 8px; }
+  .section-head h2 { font-size: 28px; }
+  .section-head p { color: var(--text-dim); font-size: 14px; margin-top: 6px; }
+  .section-block { padding: 44px 0 8px; }
 
-  .admin-form { border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin-bottom: 28px; background: var(--bg-raised); }
+  .booking-drawer { display: none; margin-top: 18px; padding-top: 18px; border-top: 1px dotted var(--border-light); }
+
+  .admin-form { border: 1px solid var(--border); border-radius: 4px; padding: 24px; margin-bottom: 8px; background: var(--bg-raised); }
+  .admin-form h3 { font-size: 13px; margin-bottom: 18px; font-family: 'Inter', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold-dim); }
+
+  select { cursor: pointer; }
+  ::selection { background: var(--wine); color: var(--text); }
 </style>
 </head>
 <body>
 
+<header>
+  <div class="header-inner">
+    <div class="wordmark">Osteria <span>&amp; Co.</span></div>
+    <div class="who" id="whoami" style="display:none;">
+      <span>Signed in as <strong id="whoamiName"></strong></span>
+      <span class="role-tag" id="whoamiRole"></span>
+      <button class="ghost" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+</header>
+
 <div class="shell">
-  <div class="brand">
-    <h1>Osteria</h1>
-    <p>Table reservations, without the phone tag.</p>
-  </div>
-
-  <div id="whoami" class="whoami" style="display:none;">
-    <span>Signed in as <strong id="whoamiName"></strong> · <span id="whoamiRole"></span></span>
-    <button class="ghost" onclick="logout()">Sign out</button>
-  </div>
-
   <div id="banner"></div>
 
-  <nav id="nav" style="display:none;">
-    <button data-panel="tables" class="active">Tables</button>
-    <button data-panel="reservations">My Reservations</button>
-    <button data-panel="admin" id="adminTab" style="display:none;">Admin</button>
-  </nav>
-
-  <!-- AUTH -->
   <div id="panel-auth" class="panel active">
-    <div id="loginForm">
-      <h2 class="section-title">Sign in</h2>
-      <p class="section-sub">New here? <a onclick="showRegister()" style="color:var(--brass);cursor:pointer;">Create an account</a> instead.</p>
+    <div class="hero">
+      <div class="eyebrow">TABLE RESERVATIONS</div>
+      <h1>Book a table<br/><em>without</em> the phone tag.</h1>
+      <p>Sign in to reserve a table, manage your bookings, or run the floor.</p>
+    </div>
+    <hr class="rule" />
+
+    <form class="auth-form" id="loginForm" onsubmit="return false;">
+      <h2>Sign in</h2>
+      <p class="sub">New here? <a onclick="showRegister()">Create an account</a> instead.</p>
       <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com" /></div>
       <div class="field"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••" /></div>
       <button class="primary" onclick="login()">Sign in</button>
-    </div>
+    </form>
 
-    <div id="registerForm" style="display:none;">
-      <h2 class="section-title">Create an account</h2>
-      <p class="section-sub">Already have one? <a onclick="showLogin()" style="color:var(--brass);cursor:pointer;">Sign in</a> instead.</p>
+    <form class="auth-form" id="registerForm" style="display:none;" onsubmit="return false;">
+      <h2>Create an account</h2>
+      <p class="sub">Already have one? <a onclick="showLogin()">Sign in</a> instead.</p>
       <div class="field"><label>Full name</label><input type="text" id="regName" placeholder="Anthony Ortiz" /></div>
       <div class="field"><label>Email</label><input type="email" id="regEmail" placeholder="you@example.com" /></div>
       <div class="field"><label>Password</label><input type="password" id="regPassword" placeholder="At least 8 characters" /></div>
       <div class="field"><label>Phone (optional)</label><input type="text" id="regPhone" placeholder="09xx xxx xxxx" /></div>
       <button class="primary" onclick="register()">Create account</button>
-    </div>
+    </form>
   </div>
 
-  <!-- TABLES -->
-  <div id="panel-tables" class="panel">
-    <h2 class="section-title">Tables</h2>
-    <p class="section-sub">Browse tables and reserve one for your visit.</p>
-    <div id="tablesList"></div>
-  </div>
+  <div id="appShell" style="display:none;">
+    <div class="section-block">
+      <nav class="tabs" id="nav">
+        <button data-panel="tables" class="active">Tables</button>
+        <button data-panel="reservations">My Reservations</button>
+        <button data-panel="admin" id="adminTab" style="display:none;">Admin</button>
+      </nav>
 
-  <!-- RESERVATIONS -->
-  <div id="panel-reservations" class="panel">
-    <h2 class="section-title">My Reservations</h2>
-    <p class="section-sub">Everything you've booked, past and upcoming.</p>
-    <div id="myReservationsList"></div>
-  </div>
-
-  <!-- ADMIN -->
-  <div id="panel-admin" class="panel">
-    <h2 class="section-title">Admin</h2>
-    <p class="section-sub">Manage tables and every reservation in the system.</p>
-
-    <div class="admin-form">
-      <h3 style="font-size:15px;margin-bottom:14px;font-family:'Inter',sans-serif;font-weight:600;">Add a table</h3>
-      <div class="row">
-        <div class="field"><label>Table number</label><input type="text" id="newTableNumber" placeholder="T5" /></div>
-        <div class="field"><label>Capacity</label><input type="number" id="newTableCapacity" placeholder="4" /></div>
+      <div id="panel-tables" class="panel active">
+        <div class="section-head">
+          <h2>Tables</h2>
+          <p>Browse what's open and reserve one for your visit.</p>
+        </div>
+        <hr class="rule" />
+        <div id="tablesList"></div>
       </div>
-      <div class="field"><label>Location (optional)</label><input type="text" id="newTableLocation" placeholder="Window side" /></div>
-      <button class="primary" onclick="createTable()">Add table</button>
-    </div>
 
-    <h3 style="font-size:16px;margin-bottom:12px;">All reservations</h3>
-    <div id="allReservationsList"></div>
+      <div id="panel-reservations" class="panel">
+        <div class="section-head">
+          <h2>My Reservations</h2>
+          <p>Everything you've booked, past and upcoming.</p>
+        </div>
+        <hr class="rule" />
+        <div id="myReservationsList"></div>
+      </div>
+
+      <div id="panel-admin" class="panel">
+        <div class="section-head">
+          <h2>Admin</h2>
+          <p>Manage tables and every reservation in the system.</p>
+        </div>
+        <hr class="rule" />
+
+        <div class="admin-form">
+          <h3>Add a table</h3>
+          <div class="row">
+            <div class="field"><label>Table number</label><input type="text" id="newTableNumber" placeholder="T5" /></div>
+            <div class="field"><label>Capacity</label><input type="number" id="newTableCapacity" placeholder="4" /></div>
+          </div>
+          <div class="field"><label>Location (optional)</label><input type="text" id="newTableLocation" placeholder="Window side" /></div>
+          <button class="primary" onclick="createTable()">Add table</button>
+        </div>
+
+        <hr class="rule-dotted" />
+        <h3 style="font-family:'Inter',sans-serif;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;color:var(--gold-dim);margin-bottom:18px;">All reservations</h3>
+        <div id="allReservationsList"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -202,12 +277,11 @@
 const API = 'http://localhost:3000';
 let token = localStorage.getItem('osteria_token') || null;
 let user = JSON.parse(localStorage.getItem('osteria_user') || 'null');
-let tablesCache = [];
 
 function banner(msg, type) {
   const el = document.getElementById('banner');
   el.innerHTML = `<div class="banner ${type}">${msg}</div>`;
-  setTimeout(() => { el.innerHTML = ''; }, 4000);
+  setTimeout(() => { el.innerHTML = ''; }, 4500);
 }
 
 async function api(path, opts = {}) {
@@ -257,7 +331,6 @@ function onAuthed(data) {
   localStorage.setItem('osteria_user', JSON.stringify(user));
   renderAuthState();
   switchPanel('tables');
-  loadTables();
   banner(`Welcome, ${user.email}.`, 'success');
 }
 
@@ -266,37 +339,40 @@ function logout() {
   localStorage.removeItem('osteria_token');
   localStorage.removeItem('osteria_user');
   renderAuthState();
-  switchPanel('auth');
 }
 
 function renderAuthState() {
-  const nav = document.getElementById('nav');
   const whoami = document.getElementById('whoami');
+  const appShell = document.getElementById('appShell');
+  const authPanel = document.getElementById('panel-auth');
   const adminTab = document.getElementById('adminTab');
   if (user) {
-    nav.style.display = 'flex';
     whoami.style.display = 'flex';
+    appShell.style.display = 'block';
+    authPanel.classList.remove('active');
     document.getElementById('whoamiName').textContent = user.email;
     document.getElementById('whoamiRole').textContent = user.role;
     adminTab.style.display = (user.role === 'staff' || user.role === 'admin') ? 'inline-block' : 'none';
+    loadTables();
   } else {
-    nav.style.display = 'none';
     whoami.style.display = 'none';
+    appShell.style.display = 'none';
+    authPanel.classList.add('active');
   }
 }
 
 function switchPanel(name) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#appShell .panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
-  const btn = document.querySelector(`nav button[data-panel="${name}"]`);
+  const btn = document.querySelector(`nav.tabs button[data-panel="${name}"]`);
   if (btn) btn.classList.add('active');
   if (name === 'tables') loadTables();
   if (name === 'reservations') loadMyReservations();
   if (name === 'admin') loadAllReservations();
 }
 
-document.querySelectorAll('nav button').forEach(btn => {
+document.querySelectorAll('nav.tabs button').forEach(btn => {
   btn.addEventListener('click', () => switchPanel(btn.dataset.panel));
 });
 
@@ -305,7 +381,6 @@ async function loadTables() {
   list.innerHTML = '<p class="empty">Loading tables…</p>';
   try {
     const tables = await api('/tables');
-    tablesCache = tables;
     if (!tables.length) { list.innerHTML = '<p class="empty">No tables yet.</p>'; return; }
     list.innerHTML = tables.map(t => `
       <div class="item">
@@ -315,9 +390,9 @@ async function loadTables() {
         </div>
         <div class="item-meta">Seats ${t.capacity}${t.location ? ' · ' + t.location : ''}</div>
         <div class="actions">
-          <button class="primary" onclick="openBooking(${t.id})">Reserve this table</button>
+          <button class="ghost" onclick="openBooking(${t.id})">Reserve this table</button>
         </div>
-        <div id="booking-${t.id}" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+        <div id="booking-${t.id}" class="booking-drawer">
           <div class="row">
             <div class="field"><label>Date</label><input type="date" id="date-${t.id}" /></div>
             <div class="field"><label>Time</label><input type="time" id="time-${t.id}" /></div>
@@ -332,7 +407,7 @@ async function loadTables() {
 
 function openBooking(id) {
   const el = document.getElementById('booking-' + id);
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  el.style.display = el.style.display === 'none' || !el.style.display ? 'block' : 'none';
 }
 
 async function createReservation(tableId) {
@@ -411,7 +486,7 @@ async function loadAllReservations() {
             <option value="completed" ${r.status==='completed'?'selected':''}>Completed</option>
             <option value="cancelled" ${r.status==='cancelled'?'selected':''}>Cancelled</option>
           </select>
-          <button class="ghost" onclick="updateStatus(${r.id})">Update status</button>
+          <button class="ghost" onclick="updateStatus(${r.id})">Update</button>
         </div>
       </div>
     `).join('');
@@ -427,9 +502,7 @@ async function updateStatus(id) {
   } catch (e) { banner(e.message, 'error'); }
 }
 
-// Init
 renderAuthState();
-if (user) { switchPanel('tables'); } else { switchPanel('auth'); }
 </script>
 </body>
 </html>
