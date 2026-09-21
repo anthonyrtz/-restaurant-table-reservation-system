@@ -102,17 +102,23 @@
   }
   .field input:focus, .field select:focus { outline: none; border-color: var(--gold-dim); }
   .field input::placeholder { color: var(--text-faint); }
+  .field input.field-error { border-color: var(--error); }
   .row { display: flex; gap: 14px; }
   .row .field { flex: 1; }
+
+  .inline-warning {
+    display: none; color: var(--error); font-size: 12.5px; margin: -8px 0 16px;
+  }
+  .inline-warning.show { display: block; }
 
   button.primary {
     background: var(--wine); color: var(--text); border: 1px solid transparent;
     padding: 13px 24px; border-radius: 3px; font-size: 13px; font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.06em;
-    cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s;
+    cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s, opacity 0.15s;
   }
-  button.primary:hover { background: var(--wine-hover); }
-  button.primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.primary:hover:not(:disabled) { background: var(--wine-hover); }
+  button.primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
   button.ghost {
     background: none; border: 1px solid var(--border-light); color: var(--text-dim);
@@ -121,9 +127,6 @@
     transition: border-color 0.15s, color 0.15s;
   }
   button.ghost:hover { border-color: var(--gold-dim); color: var(--text); }
-
-  .switch-line { margin-top: 20px; font-size: 13px; color: var(--text-dim); }
-  .switch-line a { color: var(--gold); cursor: pointer; text-decoration: none; }
 
   form.auth-form { max-width: 380px; }
   form.auth-form h2 { font-size: 24px; margin-bottom: 6px; }
@@ -136,6 +139,7 @@
   .item-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
   .item-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 500; }
   .item-meta { color: var(--text-dim); font-size: 13px; margin-top: 6px; }
+  .item-blurb { color: var(--text-faint); font-size: 13px; margin-top: 8px; font-style: italic; max-width: 480px; }
 
   .status-pill {
     display: inline-flex; align-items: center; gap: 6px;
@@ -214,9 +218,12 @@
     <form class="auth-form" id="registerForm" style="display:none;" onsubmit="return false;">
       <h2>Create an account</h2>
       <p class="sub">Already have one? <a onclick="showLogin()">Sign in</a> instead.</p>
-      <div class="field"><label>Full name</label><input type="text" id="regName" placeholder="e.g Juan Dela Cruz" /></div>
+      <div class="field"><label>Full name</label><input type="text" id="regName" placeholder="Juan Dela Cruz" /></div>
       <div class="field"><label>Email</label><input type="email" id="regEmail" placeholder="you@example.com" /></div>
-      <div class="field"><label>Password</label><input type="password" id="regPassword" placeholder="8+ chars, with upper, lower & a special character" /></div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="8+ chars, with upper, lower &amp; a special character" />
+      </div>
       <div class="field"><label>Phone (optional)</label><input type="text" id="regPhone" placeholder="09xx xxx xxxx" /></div>
       <button class="primary" onclick="register()">Create account</button>
     </form>
@@ -319,8 +326,15 @@ async function register() {
   const phone = document.getElementById('regPhone').value.trim();
   if (!name || !email || password.length < 8) return banner('Fill in your name, email, and an 8+ character password.', 'error');
   try {
-    const data = await api('/auth/register', { method: 'POST', body: JSON.stringify({ name, email, password, phone: phone || undefined }) });
-    onAuthed(data);
+    await api('/auth/register', { method: 'POST', body: JSON.stringify({ name, email, password, phone: phone || undefined }) });
+    banner('Account created. Sign in below with your new email and password.', 'success');
+    document.getElementById('regName').value = '';
+    document.getElementById('regEmail').value = '';
+    document.getElementById('regPassword').value = '';
+    document.getElementById('regPhone').value = '';
+    showLogin();
+    document.getElementById('loginEmail').value = email;
+    document.getElementById('loginEmail').focus();
   } catch (e) { banner(e.message, 'error'); }
 }
 
@@ -376,6 +390,26 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   btn.addEventListener('click', () => switchPanel(btn.dataset.panel));
 });
 
+// Generates a short, human description of what a table suits, based on its
+// capacity and (if given) its location — purely descriptive, not stored in the DB.
+function tableBlurb(capacity, location) {
+  let sizeLine;
+  if (capacity <= 2) sizeLine = 'Cozy setup, ideal for couples or a quick solo bite.';
+  else if (capacity <= 4) sizeLine = 'Comfortable for a small group of friends or a family visit.';
+  else if (capacity <= 6) sizeLine = 'Good fit for a family gathering or a small celebration.';
+  else sizeLine = 'Built for larger parties, group dinners, or celebrations.';
+
+  const locationHints = {
+    'window side': ' Natural light and a street view.',
+    'patio': ' Open-air seating, weather permitting.',
+    'bar area': ' Lively spot near the bar — best for casual visits.',
+    'main hall': ' Central seating with full table service.',
+  };
+  const key = (location || '').trim().toLowerCase();
+  const hint = locationHints[key] || (location ? ` Located at ${location}.` : '');
+  return sizeLine + hint;
+}
+
 async function loadTables() {
   const list = document.getElementById('tablesList');
   list.innerHTML = '<p class="empty">Loading tables…</p>';
@@ -389,6 +423,7 @@ async function loadTables() {
           <span class="status-pill status-${t.status}">${t.status}</span>
         </div>
         <div class="item-meta">Seats ${t.capacity}${t.location ? ' · ' + t.location : ''}</div>
+        <div class="item-blurb">${tableBlurb(t.capacity, t.location)}</div>
         <div class="actions">
           <button class="ghost" onclick="openBooking(${t.id})">Reserve this table</button>
         </div>
@@ -396,13 +431,36 @@ async function loadTables() {
           <div class="row">
             <div class="field"><label>Date</label><input type="date" id="date-${t.id}" /></div>
             <div class="field"><label>Time</label><input type="time" id="time-${t.id}" /></div>
-            <div class="field"><label>Party size</label><input type="number" id="party-${t.id}" value="2" min="1" /></div>
+            <div class="field">
+              <label>Party size</label>
+              <input type="number" id="party-${t.id}" value="2" min="1"
+                     oninput="checkPartySize(${t.id}, ${t.capacity})" />
+            </div>
           </div>
-          <button class="primary" onclick="createReservation(${t.id})">Confirm reservation</button>
+          <p class="inline-warning" id="partyWarning-${t.id}"></p>
+          <button class="primary" id="confirmBtn-${t.id}" onclick="createReservation(${t.id})">Confirm reservation</button>
         </div>
       </div>
     `).join('');
   } catch (e) { list.innerHTML = `<p class="empty">Couldn't load tables: ${e.message}</p>`; }
+}
+
+function checkPartySize(tableId, capacity) {
+  const input = document.getElementById('party-' + tableId);
+  const warning = document.getElementById('partyWarning-' + tableId);
+  const confirmBtn = document.getElementById('confirmBtn-' + tableId);
+  const size = parseInt(input.value, 10);
+
+  if (size > capacity) {
+    warning.textContent = `This table only seats ${capacity}. Pick a table with more room, or reduce your party size.`;
+    warning.classList.add('show');
+    input.classList.add('field-error');
+    confirmBtn.disabled = true;
+  } else {
+    warning.classList.remove('show');
+    input.classList.remove('field-error');
+    confirmBtn.disabled = false;
+  }
 }
 
 function openBooking(id) {
@@ -444,6 +502,7 @@ async function loadMyReservations() {
 }
 
 async function cancelReservation(id) {
+  if (!confirm('Cancel this reservation? This can\'t be undone.')) return;
   try {
     await api('/reservations/' + id, { method: 'DELETE' });
     banner('Reservation cancelled.', 'success');
