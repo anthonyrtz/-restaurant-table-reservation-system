@@ -3,195 +3,232 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Osteria — Table Reservations</title>
+<title>TableHub — Reservations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #17140F;
-    --bg-raised: #211D17;
-    --bg-input: #29241D;
-    --text: #EFE7D8;
-    --text-dim: #9C9284;
-    --text-faint: #6B6357;
-    --wine: #7A2E3A;
-    --wine-hover: #8F3A47;
-    --gold: #C9A227;
-    --gold-dim: #8A7220;
-    --border: #362F26;
-    --border-light: #4A4136;
-    --error: #C1594F;
-    --success: #7A9A66;
+    --bg: #F7F8F6;
+    --surface: #FFFFFF;
+    --surface-hover: #FBFCFB;
+    --text: #1C2420;
+    --text-dim: #6B756E;
+    --text-faint: #9CA39D;
+    --primary: #1B6B3F;
+    --primary-hover: #155531;
+    --primary-tint: #E7F4EC;
+    --primary-tint-border: #BFE3CD;
+    --border: #E7E9E6;
+    --shadow-sm: 0 1px 2px rgba(28,36,32,0.05);
+    --shadow-md: 0 4px 16px rgba(28,36,32,0.07);
+    --amber: #B8860B;
+    --amber-tint: #FBF3DE;
+    --orange: #C2660B;
+    --orange-tint: #FBEDDE;
+    --purple: #7C4FD1;
+    --purple-tint: #F0EAFB;
+    --red: #C0392B;
+    --red-tint: #FBEAE8;
+    --blue: #2B6CB0;
+    --blue-tint: #E8F1FB;
+  }
+  html[data-theme="dark"] {
+    --bg: #141815;
+    --surface: #1D2320;
+    --surface-hover: #232A26;
+    --text: #EAEDEA;
+    --text-dim: #9CA6A0;
+    --text-faint: #6D766F;
+    --primary: #3FA96A;
+    --primary-hover: #56BE80;
+    --primary-tint: #1E3327;
+    --primary-tint-border: #2E5A3E;
+    --border: #2B322E;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+    --amber: #D9A441;
+    --amber-tint: #34291A;
+    --orange: #E0954A;
+    --orange-tint: #362717;
+    --purple: #B48CE0;
+    --purple-tint: #2A2035;
+    --red: #E0685A;
+    --red-tint: #351E1C;
+    --blue: #5B9BDB;
+    --blue-tint: #1A2733;
   }
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
   body {
     margin: 0;
     background: var(--bg);
-    background-image:
-      radial-gradient(ellipse 800px 400px at 50% -10%, rgba(122,46,58,0.12), transparent),
-      repeating-linear-gradient(180deg, transparent, transparent 79px, rgba(255,255,255,0.012) 80px);
     color: var(--text);
     font-family: 'Inter', sans-serif;
     font-size: 15px;
-    line-height: 1.6;
-    min-height: 100vh;
+    line-height: 1.55;
   }
-  h1, h2, h3 { font-family: 'Fraunces', serif; font-weight: 500; margin: 0; }
+  h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -0.02em; }
 
   header {
     position: sticky; top: 0; z-index: 10;
-    background: rgba(23,20,15,0.92); backdrop-filter: blur(8px);
+    background: rgba(247,248,246,0.9); backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
   }
   .header-inner {
-    max-width: 780px; margin: 0 auto; padding: 18px 24px;
+    max-width: 820px; margin: 0 auto; padding: 16px 24px;
     display: flex; justify-content: space-between; align-items: center;
   }
-  .wordmark { font-family: 'Fraunces', serif; font-size: 21px; letter-spacing: 0.01em; }
-  .wordmark span { color: var(--gold); font-style: italic; font-weight: 300; }
-  .who { display: flex; align-items: center; gap: 16px; font-size: 13px; color: var(--text-dim); }
-  .who strong { color: var(--text); font-weight: 500; }
+  .wordmark { display: flex; align-items: center; gap: 9px; font-size: 18px; font-weight: 800; }
+  .wordmark .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--primary); }
+  .who { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-dim); }
+  .who strong { color: var(--text); font-weight: 600; }
   .role-tag {
-    font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--gold-dim); border: 1px solid var(--border-light);
-    padding: 2px 7px; border-radius: 3px;
+    font-size: 11px; font-weight: 600; color: var(--primary);
+    background: var(--primary-tint); padding: 4px 10px; border-radius: 999px;
   }
-
-  .shell { max-width: 780px; margin: 0 auto; padding: 0 24px 100px; }
-
-  .hero { padding: 72px 0 48px; text-align: left; }
-  .hero .eyebrow {
-    font-size: 12px; color: var(--gold-dim); letter-spacing: 0.14em;
-    margin-bottom: 14px; font-weight: 500;
+  .theme-toggle {
+    background: var(--surface); border: 1.5px solid var(--border); color: var(--text);
+    width: 34px; height: 34px; border-radius: 999px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 16px;
+    transition: border-color 0.15s, background 0.15s;
   }
-  .hero h1 { font-size: 46px; line-height: 1.08; max-width: 480px; font-weight: 500; }
-  .hero h1 em { font-style: italic; color: var(--gold); font-weight: 300; }
-  .hero p { color: var(--text-dim); font-size: 16px; margin-top: 16px; max-width: 400px; }
+  .theme-toggle:hover { border-color: var(--primary); background: var(--primary-tint); }
 
-  .rule { border: none; border-top: 1px solid var(--border); margin: 0 0 40px; }
-  .rule-dotted { border: none; border-top: 1px dotted var(--border-light); margin: 24px 0; }
+  .shell { max-width: 820px; margin: 0 auto; padding: 0 24px 100px; }
 
-  nav.tabs { display: flex; gap: 28px; margin-bottom: 36px; }
+  .hero { padding: 56px 0 36px; }
+  .hero h1 { font-size: 38px; line-height: 1.15; max-width: 480px; }
+  .hero h1 span { color: var(--primary); }
+  .hero p { color: var(--text-dim); font-size: 16px; margin-top: 14px; max-width: 400px; }
+
+  nav.tabs {
+    display: inline-flex; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 999px; padding: 4px; margin-bottom: 32px; box-shadow: var(--shadow-sm);
+  }
   nav.tabs button {
-    background: none; border: none; color: var(--text-faint);
-    font-family: 'Fraunces', serif; font-size: 16px; font-weight: 500;
-    padding: 0 0 10px; cursor: pointer; position: relative;
-    transition: color 0.2s;
+    background: none; border: none; color: var(--text-dim);
+    font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600;
+    padding: 9px 20px; border-radius: 999px; cursor: pointer; transition: all 0.15s;
   }
-  nav.tabs button::after {
-    content: ''; position: absolute; left: 0; bottom: -1px; height: 1px; width: 0;
-    background: var(--gold); transition: width 0.25s ease;
-  }
-  nav.tabs button:hover { color: var(--text-dim); }
-  nav.tabs button.active { color: var(--text); }
-  nav.tabs button.active::after { width: 100%; }
+  nav.tabs button:hover { color: var(--text); }
+  nav.tabs button.active { background: var(--primary); color: #fff; }
 
-  .panel { display: none; padding-top: 4px; }
+  .panel { display: none; }
   .panel.active { display: block; }
 
-  .field { margin-bottom: 18px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    box-shadow: var(--shadow-sm); padding: 24px; margin-bottom: 16px;
+    transition: box-shadow 0.15s;
+  }
+  .card:hover { box-shadow: var(--shadow-md); }
+
+  .field { margin-bottom: 16px; }
   .field label {
-    display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--text-faint); margin-bottom: 8px; font-weight: 500;
+    display: block; font-size: 12.5px; font-weight: 600; color: var(--text-dim); margin-bottom: 7px;
   }
   .field input, .field select {
-    width: 100%; background: var(--bg-input); border: 1px solid var(--border);
-    color: var(--text); padding: 12px 14px; border-radius: 3px;
+    width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+    color: var(--text); padding: 11px 14px; border-radius: 10px;
     font-family: 'Inter', sans-serif; font-size: 14px; transition: border-color 0.15s;
   }
-  .field input:focus, .field select:focus { outline: none; border-color: var(--gold-dim); }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--primary); background: #fff; }
   .field input::placeholder { color: var(--text-faint); }
-  .field input.field-error { border-color: var(--error); }
-  .row { display: flex; gap: 14px; }
+  .field input.field-error { border-color: var(--red); }
+  .row { display: flex; gap: 12px; }
   .row .field { flex: 1; }
 
-  .inline-warning {
-    display: none; color: var(--error); font-size: 12.5px; margin: -8px 0 16px;
-  }
+  .inline-warning { display: none; color: var(--red); font-size: 12.5px; margin: -8px 0 14px; }
   .inline-warning.show { display: block; }
 
   button.primary {
-    background: var(--wine); color: var(--text); border: 1px solid transparent;
-    padding: 13px 24px; border-radius: 3px; font-size: 13px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.06em;
+    background: var(--primary); color: #fff; border: none;
+    padding: 12px 22px; border-radius: 999px; font-size: 13.5px; font-weight: 700;
     cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s, opacity 0.15s;
   }
-  button.primary:hover:not(:disabled) { background: var(--wine-hover); }
+  button.primary:hover:not(:disabled) { background: var(--primary-hover); }
   button.primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
   button.ghost {
-    background: none; border: 1px solid var(--border-light); color: var(--text-dim);
-    padding: 9px 16px; border-radius: 3px; font-size: 12px; cursor: pointer;
-    font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;
-    transition: border-color 0.15s, color 0.15s;
+    background: var(--surface); border: 1.5px solid var(--border); color: var(--text);
+    padding: 8px 16px; border-radius: 999px; font-size: 12.5px; font-weight: 600; cursor: pointer;
+    font-family: 'Inter', sans-serif; transition: border-color 0.15s, background 0.15s;
   }
-  button.ghost:hover { border-color: var(--gold-dim); color: var(--text); }
+  button.ghost:hover { border-color: var(--primary); background: var(--primary-tint); }
 
-  form.auth-form { max-width: 380px; }
-  form.auth-form h2 { font-size: 24px; margin-bottom: 6px; }
-  form.auth-form .sub { color: var(--text-dim); font-size: 13px; margin-bottom: 28px; }
-  form.auth-form .sub a { color: var(--gold); cursor: pointer; text-decoration: none; border-bottom: 1px solid transparent; }
-  form.auth-form .sub a:hover { border-bottom-color: var(--gold); }
+  form.auth-form { max-width: 400px; }
+  form.auth-form h2 { font-size: 23px; margin-bottom: 6px; }
+  form.auth-form .sub { color: var(--text-dim); font-size: 13.5px; margin-bottom: 24px; }
+  form.auth-form .sub a { color: var(--primary); cursor: pointer; text-decoration: none; font-weight: 600; }
+  form.auth-form .sub a:hover { text-decoration: underline; }
 
-  .item { border-bottom: 1px solid var(--border); padding: 24px 0; }
-  .item:first-child { padding-top: 0; }
-  .item-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
-  .item-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 500; }
-  .item-meta { color: var(--text-dim); font-size: 13px; margin-top: 6px; }
-  .item-blurb { color: var(--text-faint); font-size: 13px; margin-top: 8px; font-style: italic; max-width: 480px; }
+  .table-card { display: flex; flex-direction: column; gap: 10px; }
+  .table-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .table-title { font-size: 19px; font-weight: 700; }
+  .table-meta { color: var(--text-dim); font-size: 13.5px; }
+  .table-blurb { color: var(--text-faint); font-size: 13px; }
 
-  .status-pill {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
-    font-weight: 600; white-space: nowrap; padding-top: 3px;
+  .pill-status {
+    font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 999px;
+    white-space: nowrap;
   }
-  .status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
-  .status-pending::before, .status-reserved::before { background: var(--gold); }
-  .status-pending, .status-reserved { color: var(--gold); }
-  .status-confirmed::before, .status-available::before { background: var(--success); }
-  .status-confirmed, .status-available { color: var(--success); }
-  .status-completed::before { background: #7B94B0; }
-  .status-completed { color: #7B94B0; }
-  .status-cancelled::before, .status-occupied::before { background: var(--error); }
-  .status-cancelled, .status-occupied { color: var(--error); }
-  .status-unavailable::before { background: var(--text-faint); }
-  .status-unavailable { color: var(--text-faint); }
+  .pill-available { background: var(--primary-tint); color: var(--primary); }
+  .pill-confirmed { background: var(--primary-tint); color: var(--primary); }
+  .pill-pending { background: var(--amber-tint); color: var(--amber); }
+  .pill-reserved { background: var(--orange-tint); color: var(--orange); }
+  .pill-cancelled, .pill-occupied { background: var(--red-tint); color: var(--red); }
+  .pill-completed { background: var(--blue-tint); color: var(--blue); }
+  .pill-unavailable { background: #EFEFEF; color: var(--text-faint); }
+  .pill-selected { background: var(--purple-tint); color: var(--purple); }
+
+  .table-card.is-selected { border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-tint); }
+
+  .floor-heading {
+    font-size: 13px; font-weight: 700; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin: 28px 0 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .floor-heading:first-child { margin-top: 0; }
+  .floor-heading::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
   .empty {
-    color: var(--text-faint); font-style: italic; padding: 40px 0; text-align: center;
-    border: 1px dashed var(--border); border-radius: 4px; font-size: 14px;
+    color: var(--text-faint); padding: 40px 20px; text-align: center;
+    border: 1.5px dashed var(--border); border-radius: 16px; font-size: 14px; background: var(--surface);
   }
 
-  .banner { padding: 13px 16px; border-radius: 3px; font-size: 13px; margin: 24px 0; border-left: 3px solid; }
-  .banner.error { background: rgba(193,89,79,0.08); color: #D48179; border-color: var(--error); }
-  .banner.success { background: rgba(122,154,102,0.08); color: #9CB889; border-color: var(--success); }
+  .banner { padding: 13px 18px; border-radius: 12px; font-size: 13.5px; margin: 20px 0; font-weight: 500; }
+  .banner.error { background: var(--red-tint); color: var(--red); }
+  .banner.success { background: var(--primary-tint); color: var(--primary); }
 
-  .actions { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
+  .actions { display: flex; gap: 10px; margin-top: 14px; align-items: center; flex-wrap: wrap; }
 
-  .section-head { margin-bottom: 8px; }
-  .section-head h2 { font-size: 28px; }
-  .section-head p { color: var(--text-dim); font-size: 14px; margin-top: 6px; }
-  .section-block { padding: 44px 0 8px; }
+  .section-head { margin-bottom: 24px; }
+  .section-head h2 { font-size: 25px; }
+  .section-head p { color: var(--text-dim); font-size: 14px; margin-top: 5px; }
+  .section-block { padding: 40px 0 8px; }
 
-  .booking-drawer { display: none; margin-top: 18px; padding-top: 18px; border-top: 1px dotted var(--border-light); }
+  .booking-drawer { display: none; margin-top: 6px; padding-top: 16px; border-top: 1px dashed var(--border); }
 
-  .admin-form { border: 1px solid var(--border); border-radius: 4px; padding: 24px; margin-bottom: 8px; background: var(--bg-raised); }
-  .admin-form h3 { font-size: 13px; margin-bottom: 18px; font-family: 'Inter', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold-dim); }
+  .admin-form h3 {
+    font-size: 13px; margin-bottom: 16px; font-weight: 700; color: var(--primary);
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
 
   select { cursor: pointer; }
-  ::selection { background: var(--wine); color: var(--text); }
+  ::selection { background: var(--primary-tint); color: var(--primary); }
 </style>
 </head>
 <body>
 
 <header>
   <div class="header-inner">
-    <div class="wordmark">Osteria <span>&amp; Co.</span></div>
-    <div class="who" id="whoami" style="display:none;">
-      <span>Signed in as <strong id="whoamiName"></strong></span>
-      <span class="role-tag" id="whoamiRole"></span>
-      <button class="ghost" onclick="logout()">Sign out</button>
+    <div class="wordmark"><span class="dot"></span>TableHub</div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="who" id="whoami" style="display:none;">
+        <span>Signed in as <strong id="whoamiName"></strong></span>
+        <span class="role-tag" id="whoamiRole"></span>
+        <button class="ghost" onclick="logout()">Sign out</button>
+      </div>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
     </div>
   </div>
 </header>
@@ -201,32 +238,32 @@
 
   <div id="panel-auth" class="panel active">
     <div class="hero">
-      <div class="eyebrow">TABLE RESERVATIONS</div>
-      <h1>Book a table<br/><em>without</em> the phone tag.</h1>
-      <p>Sign in to reserve a table, manage your bookings, or run the floor.</p>
+      <h1>Reserve a table<br/><span>in a few taps.</span></h1>
+      <p>Sign in to book, manage your reservations, or run the floor.</p>
     </div>
-    <hr class="rule" />
 
-    <form class="auth-form" id="loginForm" onsubmit="return false;">
-      <h2>Sign in</h2>
-      <p class="sub">New here? <a onclick="showRegister()">Create an account</a> instead.</p>
-      <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com" /></div>
-      <div class="field"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••" /></div>
-      <button class="primary" onclick="login()">Sign in</button>
-    </form>
+    <div class="card">
+      <form class="auth-form" id="loginForm" onsubmit="return false;">
+        <h2>Sign in</h2>
+        <p class="sub">New here? <a onclick="showRegister()">Create an account</a> instead.</p>
+        <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@example.com" /></div>
+        <div class="field"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••" /></div>
+        <button class="primary" onclick="login()">Sign in</button>
+      </form>
 
-    <form class="auth-form" id="registerForm" style="display:none;" onsubmit="return false;">
-      <h2>Create an account</h2>
-      <p class="sub">Already have one? <a onclick="showLogin()">Sign in</a> instead.</p>
-      <div class="field"><label>Full name</label><input type="text" id="regName" placeholder="Juan Dela Cruz" /></div>
-      <div class="field"><label>Email</label><input type="email" id="regEmail" placeholder="you@example.com" /></div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="regPassword" placeholder="8+ chars, with upper, lower &amp; a special character" />
-      </div>
-      <div class="field"><label>Phone (optional)</label><input type="text" id="regPhone" placeholder="09xx xxx xxxx" /></div>
-      <button class="primary" onclick="register()">Create account</button>
-    </form>
+      <form class="auth-form" id="registerForm" style="display:none;" onsubmit="return false;">
+        <h2>Create an account</h2>
+        <p class="sub">Already have one? <a onclick="showLogin()">Sign in</a> instead.</p>
+        <div class="field"><label>Full name</label><input type="text" id="regName" placeholder="Juan Dela Cruz" /></div>
+        <div class="field"><label>Email</label><input type="email" id="regEmail" placeholder="you@example.com" /></div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="regPassword" placeholder="8+ chars, with upper, lower &amp; a special character" />
+        </div>
+        <div class="field"><label>Phone (optional)</label><input type="text" id="regPhone" placeholder="09xx xxx xxxx" /></div>
+        <button class="primary" onclick="register()">Create account</button>
+      </form>
+    </div>
   </div>
 
   <div id="appShell" style="display:none;">
@@ -242,7 +279,6 @@
           <h2>Tables</h2>
           <p>Browse what's open and reserve one for your visit.</p>
         </div>
-        <hr class="rule" />
         <div id="tablesList"></div>
       </div>
 
@@ -251,7 +287,6 @@
           <h2>My Reservations</h2>
           <p>Everything you've booked, past and upcoming.</p>
         </div>
-        <hr class="rule" />
         <div id="myReservationsList"></div>
       </div>
 
@@ -260,20 +295,26 @@
           <h2>Admin</h2>
           <p>Manage tables and every reservation in the system.</p>
         </div>
-        <hr class="rule" />
 
-        <div class="admin-form">
+        <div class="card admin-form">
           <h3>Add a table</h3>
           <div class="row">
             <div class="field"><label>Table number</label><input type="text" id="newTableNumber" placeholder="T5" /></div>
             <div class="field"><label>Capacity</label><input type="number" id="newTableCapacity" placeholder="4" /></div>
+            <div class="field">
+              <label>Floor</label>
+              <select id="newTableFloor">
+                <option value="1">Floor 1</option>
+                <option value="2">Floor 2</option>
+                <option value="3">Floor 3</option>
+              </select>
+            </div>
           </div>
           <div class="field"><label>Location (optional)</label><input type="text" id="newTableLocation" placeholder="Window side" /></div>
           <button class="primary" onclick="createTable()">Add table</button>
         </div>
 
-        <hr class="rule-dotted" />
-        <h3 style="font-family:'Inter',sans-serif;font-size:13px;text-transform:uppercase;letter-spacing:0.06em;color:var(--gold-dim);margin-bottom:18px;">All reservations</h3>
+        <h3 style="font-size:13px;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-dim);margin:28px 0 14px;font-weight:700;">All reservations</h3>
         <div id="allReservationsList"></div>
       </div>
     </div>
@@ -390,8 +431,6 @@ document.querySelectorAll('nav.tabs button').forEach(btn => {
   btn.addEventListener('click', () => switchPanel(btn.dataset.panel));
 });
 
-// Generates a short, human description of what a table suits, based on its
-// capacity and (if given) its location — purely descriptive, not stored in the DB.
 function tableBlurb(capacity, location) {
   let sizeLine;
   if (capacity <= 2) sizeLine = 'Cozy setup, ideal for couples or a quick solo bite.';
@@ -416,32 +455,45 @@ async function loadTables() {
   try {
     const tables = await api('/tables');
     if (!tables.length) { list.innerHTML = '<p class="empty">No tables yet.</p>'; return; }
-    list.innerHTML = tables.map(t => `
-      <div class="item">
-        <div class="item-top">
-          <span class="item-title">Table ${t.tableNumber}</span>
-          <span class="status-pill status-${t.status}">${t.status}</span>
-        </div>
-        <div class="item-meta">Seats ${t.capacity}${t.location ? ' · ' + t.location : ''}</div>
-        <div class="item-blurb">${tableBlurb(t.capacity, t.location)}</div>
-        <div class="actions">
-          <button class="ghost" onclick="openBooking(${t.id})">Reserve this table</button>
-        </div>
-        <div id="booking-${t.id}" class="booking-drawer">
-          <div class="row">
-            <div class="field"><label>Date</label><input type="date" id="date-${t.id}" /></div>
-            <div class="field"><label>Time</label><input type="time" id="time-${t.id}" /></div>
-            <div class="field">
-              <label>Party size</label>
-              <input type="number" id="party-${t.id}" value="2" min="1"
-                     oninput="checkPartySize(${t.id}, ${t.capacity})" />
+
+    const byFloor = {};
+    tables.forEach(t => {
+      const f = t.floor || 1;
+      if (!byFloor[f]) byFloor[f] = [];
+      byFloor[f].push(t);
+    });
+
+    let html = '';
+    [1, 2, 3].forEach(floorNum => {
+      if (!byFloor[floorNum]) return;
+      html += `<div class="floor-heading">Floor ${floorNum}</div>`;
+      html += byFloor[floorNum].map(t => `
+        <div class="card table-card" id="tableCard-${t.id}">
+          <div class="table-top">
+            <div>
+              <div class="table-title">Table ${t.tableNumber}</div>
+              <div class="table-meta">Seats ${t.capacity}${t.location ? ' · ' + t.location : ''}</div>
             </div>
+            <span class="pill-status pill-${t.status}" id="statusPill-${t.id}">${t.status}</span>
           </div>
-          <p class="inline-warning" id="partyWarning-${t.id}"></p>
-          <button class="primary" id="confirmBtn-${t.id}" onclick="createReservation(${t.id})">Confirm reservation</button>
+          <div class="table-blurb">${tableBlurb(t.capacity, t.location)}</div>
+          <div class="actions">
+            <button class="ghost" onclick="openBooking(${t.id})">Reserve this table</button>
+          </div>
+          <div id="booking-${t.id}" class="booking-drawer">
+            <div class="row">
+              <div class="field"><label>Guests</label><input type="number" id="party-${t.id}" value="2" min="1"
+                     oninput="checkPartySize(${t.id}, ${t.capacity})" /></div>
+              <div class="field"><label>Date</label><input type="date" id="date-${t.id}" /></div>
+              <div class="field"><label>Time</label><input type="time" id="time-${t.id}" /></div>
+            </div>
+            <p class="inline-warning" id="partyWarning-${t.id}"></p>
+            <button class="primary" id="confirmBtn-${t.id}" onclick="createReservation(${t.id})">Confirm reservation</button>
+          </div>
         </div>
-      </div>
-    `).join('');
+      `).join('');
+    });
+    list.innerHTML = html;
   } catch (e) { list.innerHTML = `<p class="empty">Couldn't load tables: ${e.message}</p>`; }
 }
 
@@ -465,7 +517,20 @@ function checkPartySize(tableId, capacity) {
 
 function openBooking(id) {
   const el = document.getElementById('booking-' + id);
-  el.style.display = el.style.display === 'none' || !el.style.display ? 'block' : 'none';
+  const card = document.getElementById('tableCard-' + id);
+  const pill = document.getElementById('statusPill-' + id);
+  const opening = el.style.display === 'none' || !el.style.display;
+  el.style.display = opening ? 'block' : 'none';
+  card.classList.toggle('is-selected', opening);
+  if (opening) {
+    pill.dataset.original = pill.className + '|' + pill.textContent;
+    pill.className = 'pill-status pill-selected';
+    pill.textContent = 'selected';
+  } else if (pill.dataset.original) {
+    const [cls, txt] = pill.dataset.original.split('|');
+    pill.className = cls;
+    pill.textContent = txt;
+  }
 }
 
 async function createReservation(tableId) {
@@ -487,12 +552,14 @@ async function loadMyReservations() {
     const res = await api('/reservations/mine');
     if (!res.length) { list.innerHTML = '<p class="empty">No reservations yet — book a table to get started.</p>'; return; }
     list.innerHTML = res.map(r => `
-      <div class="item">
-        <div class="item-top">
-          <span class="item-title">Table ${r.table?.tableNumber ?? r.tableId}</span>
-          <span class="status-pill status-${r.status}">${r.status}</span>
+      <div class="card table-card">
+        <div class="table-top">
+          <div>
+            <div class="table-title">Table ${r.table?.tableNumber ?? r.tableId}</div>
+            <div class="table-meta">${r.reservationDate} at ${r.reservationTime} · Party of ${r.partySize}</div>
+          </div>
+          <span class="pill-status pill-${r.status}">${r.status}</span>
         </div>
-        <div class="item-meta">${r.reservationDate} at ${r.reservationTime} · Party of ${r.partySize}</div>
         <div class="actions">
           ${r.status !== 'cancelled' ? `<button class="ghost" onclick="cancelReservation(${r.id})">Cancel</button>` : ''}
         </div>
@@ -514,9 +581,10 @@ async function createTable() {
   const tableNumber = document.getElementById('newTableNumber').value.trim();
   const capacity = parseInt(document.getElementById('newTableCapacity').value, 10);
   const location = document.getElementById('newTableLocation').value.trim();
+  const floor = parseInt(document.getElementById('newTableFloor').value, 10);
   if (!tableNumber || !capacity) return banner('Enter a table number and capacity.', 'error');
   try {
-    await api('/tables', { method: 'POST', body: JSON.stringify({ tableNumber, capacity, location: location || undefined }) });
+    await api('/tables', { method: 'POST', body: JSON.stringify({ tableNumber, capacity, location: location || undefined, floor }) });
     banner('Table added.', 'success');
     document.getElementById('newTableNumber').value = '';
     document.getElementById('newTableCapacity').value = '';
@@ -532,12 +600,14 @@ async function loadAllReservations() {
     const res = await api('/reservations');
     if (!res.length) { list.innerHTML = '<p class="empty">No reservations in the system yet.</p>'; return; }
     list.innerHTML = res.map(r => `
-      <div class="item">
-        <div class="item-top">
-          <span class="item-title">Table ${r.table?.tableNumber ?? r.tableId}</span>
-          <span class="status-pill status-${r.status}">${r.status}</span>
+      <div class="card table-card">
+        <div class="table-top">
+          <div>
+            <div class="table-title">Table ${r.table?.tableNumber ?? r.tableId}</div>
+            <div class="table-meta">${r.customer?.email ?? 'customer #' + r.customerId} · ${r.reservationDate} at ${r.reservationTime} · Party of ${r.partySize}</div>
+          </div>
+          <span class="pill-status pill-${r.status}">${r.status}</span>
         </div>
-        <div class="item-meta">${r.customer?.email ?? 'customer #' + r.customerId} · ${r.reservationDate} at ${r.reservationTime} · Party of ${r.partySize}</div>
         <div class="actions">
           <select id="statusSelect-${r.id}">
             <option value="pending" ${r.status==='pending'?'selected':''}>Pending</option>
@@ -560,6 +630,17 @@ async function updateStatus(id) {
     loadAllReservations();
   } catch (e) { banner(e.message, 'error'); }
 }
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('osteria_theme', theme);
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+applyTheme(localStorage.getItem('osteria_theme') || 'light');
 
 renderAuthState();
 </script>

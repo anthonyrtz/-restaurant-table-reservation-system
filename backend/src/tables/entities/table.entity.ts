@@ -30,6 +30,9 @@ export class RestaurantTable {
   @Column({ nullable: true })
   location: string; // e.g. "Window side", "Patio", "Main hall"
 
+  @Column({ type: 'int', default: 1 })
+  floor: number; // 1, 2, or 3
+
   @OneToMany(() => Reservation, (reservation) => reservation.table)
   reservations: Reservation[];
 }
