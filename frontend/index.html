@@ -31,6 +31,7 @@
     --red-tint: #FBEAE8;
     --blue: #2B6CB0;
     --blue-tint: #E8F1FB;
+    --header-bg: rgba(247,248,246,0.9);
   }
   html[data-theme="dark"] {
     --bg: #141815;
@@ -56,6 +57,7 @@
     --red-tint: #351E1C;
     --blue: #5B9BDB;
     --blue-tint: #1A2733;
+    --header-bg: rgba(20,24,21,0.9);
   }
   * { box-sizing: border-box; }
   body {
@@ -70,7 +72,7 @@
 
   header {
     position: sticky; top: 0; z-index: 10;
-    background: rgba(247,248,246,0.9); backdrop-filter: blur(10px);
+    background: var(--header-bg); backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
   }
   .header-inner {
